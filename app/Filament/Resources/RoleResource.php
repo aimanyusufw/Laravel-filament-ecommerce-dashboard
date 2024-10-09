@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -32,6 +33,7 @@ class RoleResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('guard_name')
                             ->required()
+                            ->unique()
                             ->maxLength(255),
                         Forms\Components\Textarea::make('description')
                             ->maxLength(255)
@@ -79,7 +81,16 @@ class RoleResource extends Resource
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
-            ]);
+            ])
+            ->emptyStateIcon('heroicon-o-shield-check')
+            ->emptyStateDescription('Create role and detail role data.')
+            ->emptyStateActions([
+                Action::make('create')
+                    ->label('Create role')
+                    ->url(RoleResource::getUrl('create'))
+                    ->icon('heroicon-m-plus')
+                    ->button(),
+            ]);;
     }
 
     public static function getRelations(): array

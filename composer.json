@@ -8,8 +8,10 @@
         "php": "^8.2",
         "althinect/filament-spatie-roles-permissions": "^2.2",
         "filament/filament": "^3.2",
+        "filament/spatie-laravel-media-library-plugin": "^3.2",
         "laravel/framework": "^11.9",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "ysfkaya/filament-phone-input": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
