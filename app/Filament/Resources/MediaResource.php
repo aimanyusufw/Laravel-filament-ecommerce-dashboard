@@ -53,9 +53,10 @@ class MediaResource extends Resource
                 Stack::make([
                     ImageColumn::make('file_path')
                         ->width('100%')
-                        ->height(350),
+                        ->alignCenter()
+                        ->height(150),
                     TextColumn::make('file_name')
-                        ->limit(20)
+                        ->limit(15)
                         ->size('sm')
                         ->alignCenter()
                 ])->extraAttributes(["style" => 'position : relative;']),
@@ -63,7 +64,8 @@ class MediaResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->contentGrid([
                 'md' => 2,
-                'xl' => 3,
+                'lg' => 4,
+                'xl' => 5,
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make()
