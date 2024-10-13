@@ -49,14 +49,15 @@ class UserResource extends Resource
                         ->maxLength(255),
                     Forms\Components\TextInput::make('password')
                         ->password()
+                        ->minLength(8)
                         ->revealable()
                         ->maxLength(255)
                         ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
                         ->required(fn($livewire) => $livewire instanceof Pages\CreateUser)
-                        ->visible(fn($livewire) => $livewire instanceof Pages\CreateUser || $livewire instanceof Pages\EditUser)
                         ->dehydrated(fn($state) => filled($state)),
                     Forms\Components\TextInput::make('confirm_password')
                         ->password()
+                        ->minLength(8)
                         ->required(
                             fn($livewire) =>
                             $livewire instanceof Pages\CreateUser ||
