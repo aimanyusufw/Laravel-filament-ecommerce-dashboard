@@ -35,76 +35,119 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Grid::make()->schema([
-                    Forms\Components\Section::make("User data")->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('password')
-                            ->password()
-                            ->minLength(8)
-                            ->revealable()
-                            ->maxLength(255)
-                            ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
-                            ->required(fn($livewire) => $livewire instanceof Pages\CreateUser)
-                            ->dehydrated(fn($state) => filled($state)),
-                        Forms\Components\TextInput::make('confirm_password')
-                            ->password()
-                            ->minLength(8)
-                            ->required(
-                                fn($livewire) =>
-                                $livewire instanceof Pages\CreateUser ||
-                                    ($livewire instanceof Pages\EditUser && filled($livewire->data['password']))
-                            )
-                            ->same('password')
-                            ->revealable()
-                            ->maxLength(255),
-                        PhoneInput::make('phone_number'),
-                        Forms\Components\DateTimePicker::make('email_verified_at'),
-                        Forms\Components\CheckboxList::make('role')
-                            ->relationship('roles', 'name')
-                            ->columns(2),
-                    ])->columns(['sm' => 2]),
-                    Forms\Components\Section::make("User detail")
-                        ->relationship('userDetail')
-                        ->schema([
-                            CuratorPicker::make('profile_picture')
-                                ->columnSpanFull()
-                                ->orderColumn('order'),
-                            Forms\Components\TextInput::make('billing_name')
-                                ->maxLength(100),
-                            PhoneInput::make('billing_phone'),
-                            Forms\Components\TextInput::make('billing_email')
-                                ->email()
-                                ->maxLength(100),
-                            Forms\Components\Textarea::make('billing_address')
-                                ->rows(2)
-                                ->maxLength(100),
-                            Forms\Components\Select::make('billing_province_id')
-                                ->relationship('province', 'province_name')
-                                ->label('Province')
-                                ->reactive()
-                                ->afterStateUpdated(function ($state, callable $set) {
-                                    $set('billing_city_id', null);
-                                }),
-                            Forms\Components\Select::make('billing_city_id')
-                                ->label('City')
-                                ->options(function (callable $get) {
-                                    $provinceId = $get('billing_province_id');
-                                    if ($provinceId) {
-                                        return \App\Models\City::where('province_id', $provinceId)->get()->mapWithKeys(function ($city) {
-                                            return [$city->id => "{$city->city_name} ({$city->type})"];
-                                        });;
-                                    }
-                                    return [];
-                                })
-                                ->reactive()
-                                ->required(),
-                        ])
-                        ->columns(['sm' => 2])
+                    Forms\Components\Tabs::make('Tabs')
+                        ->tabs([
+                            Forms\Components\Tabs\Tab::make('User Data')
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('email')
+                                        ->unique(ignoreRecord: true)
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('password')
+                                        ->password()
+                                        ->minLength(8)
+                                        ->revealable()
+                                        ->maxLength(255)
+                                        ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                                        ->required(fn($livewire) => $livewire instanceof Pages\CreateUser)
+                                        ->dehydrated(fn($state) => filled($state)),
+                                    Forms\Components\TextInput::make('confirm_password')
+                                        ->password()
+                                        ->minLength(8)
+                                        ->required(
+                                            fn($livewire) =>
+                                            $livewire instanceof Pages\CreateUser ||
+                                                ($livewire instanceof Pages\EditUser && filled($livewire->data['password']))
+                                        )
+                                        ->same('password')
+                                        ->revealable()
+                                        ->maxLength(255),
+                                    PhoneInput::make('phone_number'),
+                                    Forms\Components\DateTimePicker::make('email_verified_at'),
+                                    Forms\Components\CheckboxList::make('role')
+                                        ->relationship('roles', 'name')
+                                        ->columns(2),
+                                ])->columns(['sm' => 2]),
+                            Forms\Components\Tabs\Tab::make('User Detail')
+                                ->schema([
+                                    Forms\Components\Section::make()
+                                        ->relationship('userDetail')
+                                        ->schema([
+                                            CuratorPicker::make('profile_picture')
+                                                ->columnSpanFull()
+                                                ->orderColumn('order'),
+                                            Forms\Components\TextInput::make('billing_name')
+                                                ->maxLength(100),
+                                            PhoneInput::make('billing_phone'),
+                                            Forms\Components\TextInput::make('billing_email')
+                                                ->email()
+                                                ->maxLength(100),
+                                            Forms\Components\Textarea::make('billing_address')
+                                                ->rows(2)
+                                                ->maxLength(100),
+                                            Forms\Components\Select::make('billing_province_id')
+                                                ->relationship('province', 'province_name')
+                                                ->label('Province')
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set) {
+                                                    $set('billing_city_id', null);
+                                                }),
+                                            Forms\Components\Select::make('billing_city_id')
+                                                ->label('City')
+                                                ->options(function (callable $get) {
+                                                    $provinceId = $get('billing_province_id');
+                                                    if ($provinceId) {
+                                                        return \App\Models\City::where('province_id', $provinceId)->get()->mapWithKeys(function ($city) {
+                                                            return [$city->id => "{$city->type} {$city->city_name}"];
+                                                        });;
+                                                    }
+                                                    return [];
+                                                })
+                                                ->reactive()
+                                                ->required(fn($get) => filled($get('billing_province_id'))),
+                                        ])
+                                ]),
+                            Forms\Components\Tabs\Tab::make('Shipping Address')
+                                ->schema([
+                                    Forms\Components\Repeater::make('Shipping Address')
+                                        ->relationship('userShippingAddress')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('title'),
+                                            Forms\Components\TextInput::make('shipping_name')
+                                                ->maxLength(100),
+                                            PhoneInput::make('shipping_phone'),
+                                            Forms\Components\TextInput::make('shipping_email')
+                                                ->email()
+                                                ->maxLength(100),
+                                            Forms\Components\Textarea::make('shipping_address')
+                                                ->rows(2)
+                                                ->maxLength(100),
+                                            Forms\Components\Select::make('shipping_province_id')
+                                                ->relationship('province', 'province_name')
+                                                ->label('Province')
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set) {
+                                                    $set('shipping_city_id', null);
+                                                }),
+                                            Forms\Components\Select::make('shipping_city_id')
+                                                ->label('City')
+                                                ->options(function (callable $get) {
+                                                    $provinceId = $get('shipping_province_id');
+                                                    if ($provinceId) {
+                                                        return \App\Models\City::where('province_id', $provinceId)->get()->mapWithKeys(function ($city) {
+                                                            return [$city->id => "{$city->type} {$city->city_name}"];
+                                                        });;
+                                                    }
+                                                    return [];
+                                                })
+                                                ->reactive()
+                                                ->required(fn($get) => filled($get('shipping_province_id'))),
+                                        ])->columns(['sm' => 2])->columnSpanFull()
+                                ]),
+                        ])->columnSpanFull(),
                 ])->columns(['sm' => 2])->columnSpan(2),
                 Forms\Components\Section::make("Time Stamps")->schema(
                     [

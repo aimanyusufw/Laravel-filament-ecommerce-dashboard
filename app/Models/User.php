@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\UsertDetail;
+use App\Models\UserDetail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -29,7 +30,11 @@ class User extends Authenticatable
 
     public function userDetail(): HasOne
     {
-        return $this->hasOne(UsertDetail::class);
+        return $this->hasOne(UserDetail::class);
+    }
+    public function userShippingAddress(): HasMany
+    {
+        return $this->hasMany(UserShippingAddress::class);
     }
 
     /**
