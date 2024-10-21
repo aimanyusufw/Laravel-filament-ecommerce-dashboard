@@ -9,6 +9,7 @@ use App\Models\User;
 use Awcodes\Curator\Components\Forms\CuratorPicker;
 use Filament\Actions\CreateAction;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -76,9 +77,15 @@ class UserResource extends Resource
                                     Forms\Components\Section::make()
                                         ->relationship('userDetail')
                                         ->schema([
-                                            CuratorPicker::make('profile_picture')
-                                                ->columnSpanFull()
-                                                ->orderColumn('order'),
+                                            Forms\Components\FileUpload::make('profile_picture')
+                                                ->image()
+                                                ->imageCropAspectRatio("10:10")
+                                                ->disk("public")
+                                                ->maxSize(5120)
+                                                ->directory("users")
+                                                ->imageEditor()
+                                                ->default(null)
+                                                ->columnSpanFull(),
                                             Forms\Components\TextInput::make('billing_name')
                                                 ->maxLength(100),
                                             PhoneInput::make('billing_phone'),
