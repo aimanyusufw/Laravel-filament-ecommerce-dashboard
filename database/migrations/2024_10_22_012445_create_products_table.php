@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('slug')->nullable();
             $table->string('excerpt')->nullable();
             $table->text('description')->nullable();
-            $table->json('product_images')->nullable();
             $table->unsignedInteger("weight")->nullable()->default(0);
             $table->double('price')->nullable()->default(0);
             $table->double('sale_price')->nullable()->default(0);
