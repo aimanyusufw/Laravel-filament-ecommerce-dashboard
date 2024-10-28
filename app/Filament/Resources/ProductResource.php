@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
@@ -52,8 +53,9 @@ class ProductResource extends Resource
                                 ->rows(5)
                                 ->columnSpanFull()
                                 ->maxLength(255),
-                            Forms\Components\RichEditor::make('description')
-                                ->columnSpanFull(),
+                            TiptapEditor::make('description')
+                                ->columnSpanFull()
+                                ->required(),
                         ])
                         ->columns(2),
 
