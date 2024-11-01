@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProductController;
 use App\Models\City;
 use App\Models\Province;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,10 @@ Route::prefix('auth')->group(function () {
         Route::delete('user', [AuthController::class, 'deleteUser']);
         Route::delete('logout', [AuthController::class, 'logoutUser']);
     });
+});
+
+Route::middleware('auth:sanctum')->prefix('product')->group(function () {
+    Route::get('', [ProductController::class, 'getAllProduct']);
 });
 
 Route::get('/provinces', function () {
