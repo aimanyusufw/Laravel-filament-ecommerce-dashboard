@@ -59,7 +59,5 @@ class DatabaseSeeder extends Seeder
         }
 
         // fetchProvincesAndCities();
-
-        
     }
 }

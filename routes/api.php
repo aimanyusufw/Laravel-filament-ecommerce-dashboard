@@ -1,14 +1,19 @@
 <?php
 
-use App\Models\Category;
+use App\Http\Controllers\Api\AuthController;
 use App\Models\City;
 use App\Models\Province;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'registerUser']);
+    Route::post('login', [AuthController::class, 'loginUser']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('user', [AuthController::class, 'getUser']);
+        Route::delete('user', [AuthController::class, 'deleteUser']);
+        Route::delete('logout', [AuthController::class, 'logoutUser']);
+    });
+});
 
 Route::get('/provinces', function () {
     return response()->json(["data" => Province::all()], 200);
