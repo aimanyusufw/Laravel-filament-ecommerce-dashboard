@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Models\City;
 use App\Models\Province;
@@ -19,6 +20,10 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->prefix('product')->group(function () {
     Route::get('', [ProductController::class, 'getAllProduct']);
     Route::get('{product}', [ProductController::class, 'showProduct']);
+});
+
+Route::middleware('auth:sanctum')->prefix('category')->group(function () {
+    Route::get('', [CategoryController::class, 'getAllCategories']);
 });
 
 Route::get('/provinces', function () {

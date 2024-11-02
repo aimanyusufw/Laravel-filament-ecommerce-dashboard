@@ -19,15 +19,7 @@ class ProductResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             // 'image' => $this->categories->map(fn($category) => $category->featuredImage),
-            'categories' => $this->categories ? $this->categories->map(function ($category) {
-                return [
-                    'name' => $category->title,
-                    'slug' => $category->slug,
-                    'featured_image' => $category->featuredImage ?
-                        new MediaResource($category->featuredImage)
-                        : null
-                ];
-            }) : 'Uncategorized',
+            'categories' => $this->categories ? CategoryResource::collection($this->categories) : 'Uncategorized',
             'description' => $this->description,
             'weight' => $this->weight,
             'price' => $this->price,

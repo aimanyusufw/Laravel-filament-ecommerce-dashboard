@@ -34,6 +34,6 @@ class ProductController extends Controller
     public function showProduct(Product $product)
     {
         $product->load('categories.featuredImage', 'productPictures');
-        return response()->json(['message' => 'Get product successfully', 'data' => new ProductResource($product)]);
+        return response()->json(['message' => 'Get product successfully', 'data' => new ProductResource($product)], 200);
     }
 }
