@@ -18,6 +18,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->prefix('product')->group(function () {
     Route::get('', [ProductController::class, 'getAllProduct']);
+    Route::get('{product}', [ProductController::class, 'showProduct']);
 });
 
 Route::get('/provinces', function () {

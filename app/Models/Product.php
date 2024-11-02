@@ -25,4 +25,8 @@ class Product extends Model
             ->withPivot('order')
             ->orderBy('order');;
     }
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }
