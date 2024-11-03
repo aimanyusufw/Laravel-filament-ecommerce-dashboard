@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CartController;
 use App\Models\City;
 use App\Models\Province;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,10 @@ Route::middleware('auth:sanctum')->prefix('product')->group(function () {
 Route::middleware('auth:sanctum')->prefix('category')->group(function () {
     Route::get('', [CategoryController::class, 'getAllCategories']);
     Route::get('{category}', [CategoryController::class, 'showCategory']);
+});
+
+Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
+    Route::get('', [CartController::class, 'getAllCart']);
 });
 
 Route::get('/provinces', function () {
