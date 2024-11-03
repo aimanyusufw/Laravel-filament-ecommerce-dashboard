@@ -15,4 +15,9 @@ class CategoryController extends Controller
 
         return response()->json(['message' => 'Get all categories', 'data' => CategoryResource::collection($categories)], 200);
     }
+
+    public function showCategory(Category $category)
+    {
+        return response()->json(['message' => 'Get category', 'data' => new CategoryResource($category)]);
+    }
 }

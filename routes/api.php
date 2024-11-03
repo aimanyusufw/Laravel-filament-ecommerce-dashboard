@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->prefix('product')->group(function () {
 
 Route::middleware('auth:sanctum')->prefix('category')->group(function () {
     Route::get('', [CategoryController::class, 'getAllCategories']);
+    Route::get('{category}', [CategoryController::class, 'showCategory']);
 });
 
 Route::get('/provinces', function () {
