@@ -17,4 +17,15 @@ class CartController extends Controller
         $data = Cart::with('product')->where('user_id', $request->user()->id)->get();
         return response()->json(['message' => 'Success get all cart', 'data' => CartResource::collection($data)]);
     }
+
+    public function createCart(CreateCartRequest $request)
+    {
+        $data = $request->validated();
+
+        $cart = new Cart($data);
+        $cart->user_id = $request->user()->id;
+        $cart->save();
+
+        return response()->json(['message' => 'Success add to cart', 'data' => $data]);
+    }
 }
