@@ -28,4 +28,16 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Success add to cart', 'data' => $data]);
     }
+
+    public function updateCart(Request $request, Cart $cart)
+    {
+        $data = $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $cart->quantity = $data['quantity'];
+        $cart->save();
+
+        return response()->json(['message' => 'Success add to cart', 'data' => $data]);
+    }
 }

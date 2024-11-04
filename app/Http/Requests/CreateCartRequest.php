@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateCartRequest extends FormRequest
 {
@@ -25,5 +27,10 @@ class CreateCartRequest extends FormRequest
             'product_id' => 'required|exists:products,id',
             'quantity' => 'integer|min:1'
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response(['errors' => $validator->getMessageBag()], 401));
     }
 }

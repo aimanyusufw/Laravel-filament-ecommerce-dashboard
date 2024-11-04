@@ -30,7 +30,8 @@ Route::middleware('auth:sanctum')->prefix('category')->group(function () {
 
 Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
     Route::get('', [CartController::class, 'getAllCart']);
-    Route::post('add', [CartController::class, 'createCart']);
+    Route::post('', [CartController::class, 'createCart']);
+    Route::put('{cart}', [CartController::class, 'updateCart']);
 });
 
 Route::get('/provinces', function () {
