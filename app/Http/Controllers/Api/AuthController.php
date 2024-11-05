@@ -80,9 +80,9 @@ class AuthController extends Controller
     // delete user
     public function deleteUser(Request $request)
     {
-        $user = $request->user()->id;
+        $user = $request->user();
 
-        User::deleted($user);
+        $user->delete();
 
         return response(['message' => 'User deleted successfully'], 200);
     }
