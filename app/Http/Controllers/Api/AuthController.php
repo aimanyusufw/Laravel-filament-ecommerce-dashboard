@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class AuthController extends Controller
 {
 
     // register user
-    public function registerUser(UserRegisterRequest $request): Response
+    public function registerUser(UserRegisterRequest $request)
     {
         $data = $request->validated();
 
@@ -34,7 +35,16 @@ class AuthController extends Controller
 
         $user = new User($data);
         $user->password = Hash::make($data['password']);
+        $role = Role::where('name', 'customer')->first();
+        if ($role) {
+            $user->assignRole($role->name); // Menggunakan nama role sebagai string
+        } else {
+            return response()->json([
+                'error' => 'Role customer not found.'
+            ], 400);
+        }
         $user->save();
+        $user['token'] = $user->createToken('auth_token')->plainTextToken;
 
         return response(['message' => 'Register user successfully', 'data' => new UserResource($user)], 201);
     }
@@ -57,12 +67,6 @@ class AuthController extends Controller
         $user['token'] = $user->createToken('auth_token')->plainTextToken;
 
         return response(['message' => 'Loggin successfully', 'data' => new UserResource($user)], 200);
-    }
-
-    // get user
-    public function getUser(Request $request)
-    {
-        return response(['message' => 'Get user successfully', 'data' => new UserResource($request->user())], 200);
     }
 
     // Log out user
