@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\UserController;
 use App\Models\City;
 use App\Models\Province;
 use Illuminate\Support\Facades\Route;
@@ -12,10 +13,13 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'registerUser']);
     Route::post('login', [AuthController::class, 'loginUser']);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('user', [AuthController::class, 'getUser']);
         Route::delete('user', [AuthController::class, 'deleteUser']);
         Route::delete('logout', [AuthController::class, 'logoutUser']);
     });
+});
+
+Route::middleware('auth:sanctum')->prefix('user')->group(function () {
+    Route::get('', [UserController::class, 'getUser']);
 });
 
 Route::middleware('auth:sanctum')->prefix('product')->group(function () {
