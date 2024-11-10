@@ -20,6 +20,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::get('', [UserController::class, 'getUser']);
+    Route::post('', [UserController::class, 'updateOrCreateUserDetail']);
 });
 
 Route::middleware('auth:sanctum')->prefix('product')->group(function () {
