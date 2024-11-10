@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 class ShippingAddressController extends Controller
 {
 
+    public function getAddress(Request $request)
+    {
+        $shippingAddress = UserShippingAddress::where('user_id', $request->user()->id)->with('province', 'city')->get();
+        return response(['message' => 'Address created successfully', 'data' =>  ShippingAddressResource::collection($shippingAddress)], 201);
+    }
+
     public function create(CreateShippingAddressRequest $request)
     {
         $data = $request->validated();

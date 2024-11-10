@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->prefix('category')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->prefix('address')->group(function () {
+    Route::get('', [ShippingAddressController::class, 'getAddress']);
     Route::post('', [ShippingAddressController::class, 'create']);
 });
 
