@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\City;
 use App\Models\Province;
@@ -31,6 +32,10 @@ Route::middleware('auth:sanctum')->prefix('product')->group(function () {
 Route::middleware('auth:sanctum')->prefix('category')->group(function () {
     Route::get('', [CategoryController::class, 'getAllCategories']);
     Route::get('{category}', [CategoryController::class, 'showCategory']);
+});
+
+Route::middleware('auth:sanctum')->prefix('address')->group(function () {
+    Route::post('', [ShippingAddressController::class, 'create']);
 });
 
 Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
