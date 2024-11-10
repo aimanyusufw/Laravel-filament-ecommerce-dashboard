@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->prefix('category')->group(function () {
 Route::middleware('auth:sanctum')->prefix('address')->group(function () {
     Route::get('', [ShippingAddressController::class, 'getAddress']);
     Route::post('', [ShippingAddressController::class, 'create']);
+    Route::delete('{userShippingAddress}', [ShippingAddressController::class, 'delete']);
 });
 
 Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
