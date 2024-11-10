@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateShippingAddressRequest;
+use App\Http\Requests\UpdateShippingAddressRequest;
 use App\Http\Resources\ShippingAddressResource;
 use App\Models\UserShippingAddress;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -37,6 +38,21 @@ class ShippingAddressController extends Controller
         $shippingAddress->save();
 
         return response(['message' => 'Address created successfully', 'data' => new ShippingAddressResource($shippingAddress->load('province', 'city'))], 201);
+    }
+
+    public function update(UpdateShippingAddressRequest $request, UserShippingAddress $userShippingAddress)
+    {
+        if ($userShippingAddress->user_id !== $request->user()->id) {
+            throw new HttpResponseException(response([
+                'message' => 'Unauthenticated'
+            ], 401));
+        }
+        $data = $request->validated();
+
+        $userShippingAddress->update($data);
+        $userShippingAddress->save();
+
+        return response(['message' => 'Address updated successfully', 'data' => new ShippingAddressResource($userShippingAddress->load('province', 'city'))], 200);
     }
 
     public function delete(Request $request, UserShippingAddress $userShippingAddress)
