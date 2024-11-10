@@ -19,37 +19,40 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->prefix('user')->group(function () {
-    Route::get('', [UserController::class, 'getUser']);
-    Route::post('', [UserController::class, 'updateOrCreateUserDetail']);
-});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('user')->group(function () {
+        Route::get('', [UserController::class, 'getUser']);
+        Route::post('', [UserController::class, 'updateOrCreateUserDetail']);
+    });
 
-Route::middleware('auth:sanctum')->prefix('product')->group(function () {
-    Route::get('', [ProductController::class, 'getAllProduct']);
-    Route::get('{product}', [ProductController::class, 'showProduct']);
-});
+    Route::prefix('product')->group(function () {
+        Route::get('', [ProductController::class, 'getAllProduct']);
+        Route::get('{product}', [ProductController::class, 'showProduct']);
+    });
 
-Route::middleware('auth:sanctum')->prefix('category')->group(function () {
-    Route::get('', [CategoryController::class, 'getAllCategories']);
-    Route::get('{category}', [CategoryController::class, 'showCategory']);
-});
+    Route::prefix('category')->group(function () {
+        Route::get('', [CategoryController::class, 'getAllCategories']);
+        Route::get('{category}', [CategoryController::class, 'showCategory']);
+    });
 
-Route::middleware('auth:sanctum')->prefix('address')->group(function () {
-    Route::get('', [ShippingAddressController::class, 'getAddress']);
-    Route::post('', [ShippingAddressController::class, 'create']);
-    Route::delete('{userShippingAddress}', [ShippingAddressController::class, 'delete']);
-});
+    Route::prefix('address')->group(function () {
+        Route::get('', [ShippingAddressController::class, 'getAddress']);
+        Route::post('', [ShippingAddressController::class, 'create']);
+        Route::delete('{userShippingAddress}', [ShippingAddressController::class, 'delete']);
+    });
 
-Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
-    Route::get('', [CartController::class, 'getAllCart']);
-    Route::post('', [CartController::class, 'createCart']);
-    Route::put('{cart}', [CartController::class, 'updateCart']);
-    Route::delete('{cart}', [CartController::class, 'deleteCart']);
-});
+    Route::prefix('cart')->group(function () {
+        Route::get('', [CartController::class, 'getAllCart']);
+        Route::post('', [CartController::class, 'createCart']);
+        Route::put('{cart}', [CartController::class, 'updateCart']);
+        Route::delete('{cart}', [CartController::class, 'deleteCart']);
+    });
 
-Route::get('/provinces', function () {
-    return response()->json(["data" => Province::all()], 200);
-});
-Route::get('/cities/{province_id}', function ($province_id) {
-    return response()->json(["data" => City::where('province_id', $province_id)->get()], 200);
+    Route::get('/provinces', function () {
+        return response()->json(["data" => Province::all()], 200);
+    });
+
+    Route::get('/cities/{province_id}', function ($province_id) {
+        return response()->json(["data" => City::where('province_id', $province_id)->get()], 200);
+    });
 });
