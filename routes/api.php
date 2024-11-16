@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\City;
@@ -33,6 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('category')->group(function () {
         Route::get('', [CategoryController::class, 'getAllCategories']);
         Route::get('{category}', [CategoryController::class, 'showCategory']);
+    });
+
+    Route::prefix('rajaongkir')->group(function () {
+        Route::post('cost', [CheckoutController::class, 'calculateCost']);
     });
 
     Route::prefix('address')->group(function () {
