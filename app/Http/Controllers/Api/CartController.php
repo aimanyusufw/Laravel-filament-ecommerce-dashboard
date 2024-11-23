@@ -16,18 +16,36 @@ class CartController extends Controller
     public function getAllCart(Request $request)
     {
         $data = Cart::with('product')->where('user_id', $request->user()->id)->get();
-        return response()->json(['message' => 'Success get all cart', 'data' => CartResource::collection($data)]);
+
+        $amount = $data->sum(function ($product) {
+            $price = $product->product->price ?? $product->product->sale_price;
+            return $price * $product->quantity;
+        });
+
+        return response()->json(['message' => 'Success get all cart', 'data' => CartResource::collection($data), 'amount' => $amount]);
     }
 
     public function createCart(CreateCartRequest $request)
     {
+
         $data = $request->validated();
+        $cart = Cart::where('user_id', $request->user()->id)
+            ->where('product_id', $data['product_id'])
+            ->first();
 
-        $cart = new Cart($data);
-        $cart->user_id = $request->user()->id;
-        $cart->save();
+        if ($cart) {
+            $cart->quantity += $data['quantity'];
+            $cart->save();
+        } else {
+            $cart = new Cart($data);
+            $cart->user_id = $request->user()->id;
+            $cart->save();
+        }
 
-        return response()->json(['message' => 'Success add to cart', 'data' => $data]);
+        return response()->json([
+            'message' => 'Success add to cart',
+            'data' => new CartResource($cart),
+        ]);
     }
 
     public function updateCart(Request $request, Cart $cart)
