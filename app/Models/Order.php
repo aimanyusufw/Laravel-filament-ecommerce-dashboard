@@ -11,6 +11,11 @@ class Order extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'shipping_detail' => 'array',
+        'shipping_address_detail' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
