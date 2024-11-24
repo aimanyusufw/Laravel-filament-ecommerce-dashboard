@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
@@ -62,13 +63,15 @@ class ProductResource extends Resource
                     Forms\Components\Section::make('Prices')
                         ->schema([
                             Forms\Components\TextInput::make('price')
-                                ->numeric()
-                                ->default(0)
-                                ->prefix('Rp'),
-                            Forms\Components\TextInput::make('sale_price')
-                                ->numeric()
                                 ->prefix('Rp')
-                                ->default(0),
+                                ->mask(RawJs::make('$money($input)'))
+                                ->stripCharacters('.')
+                                ->numeric(),
+                            Forms\Components\TextInput::make('sale_price')
+                                ->prefix('Rp')
+                                ->mask(RawJs::make('$money($input)'))
+                                ->stripCharacters('.')
+                                ->numeric(),
                         ])
                         ->columns(2),
 
