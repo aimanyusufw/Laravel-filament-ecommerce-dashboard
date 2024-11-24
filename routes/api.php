@@ -40,6 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('cost', [CheckoutController::class, 'calculateCost']);
     });
 
+    Route::prefix('checkout')->group(function () {
+        Route::post('', [CheckoutController::class, 'checkOut']);
+    });
+
     Route::prefix('address')->group(function () {
         Route::get('', [ShippingAddressController::class, 'getAddress']);
         Route::post('', [ShippingAddressController::class, 'create']);
