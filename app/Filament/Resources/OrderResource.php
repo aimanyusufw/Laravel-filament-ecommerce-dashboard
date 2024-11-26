@@ -6,6 +6,7 @@ use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
 use Filament\Forms;
+use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -61,8 +63,6 @@ class OrderResource extends Resource
                                         '5' => 'Completed',
                                         '6' => 'Cancelled',
                                     ]),
-                                Forms\Components\TextInput::make('user.name')
-                                    ->readOnly(),
                                 Forms\Components\TextInput::make('order_date')
                                     ->readOnly(),
                                 Forms\Components\TextInput::make('resi_code')
@@ -114,7 +114,29 @@ class OrderResource extends Resource
                                 Forms\Components\Repeater::make('orderItmes')
                                     ->relationship('orderItmes')
                                     ->schema([
-                                        Forms\Components\TextInput::make('product_title'),
+                                        Forms\Components\TextInput::make('product_title')
+                                            ->readOnly(),
+                                        Forms\Components\TextInput::make('qty')
+                                            ->readOnly(),
+                                        Forms\Components\TextInput::make('product_price')
+                                            ->prefix('Rp')
+                                            ->mask(RawJs::make('$money($input)'))
+                                            ->stripCharacters(',')
+                                            ->numeric()
+                                            ->readOnly(),
+                                        Forms\Components\TextInput::make('sub_total')
+                                            ->prefix('Rp')
+                                            ->mask(RawJs::make('$money($input)'))
+                                            ->stripCharacters(',')
+                                            ->numeric()
+                                            ->readOnly(),
+                                        Forms\Components\Placeholder::make('image')
+                                            ->label('Product Thumbnail')
+                                            ->content(
+                                                function ($record) {
+                                                    return new HtmlString('<img src="' . $record->product_thumbnail . '" style="max-width: 100%; height: auto; border-radius: 5px;">');
+                                                }
+                                            ),
                                     ])->columns(['sm' => 2])->columnSpanFull()
                             ]),
                     ])->columns(
