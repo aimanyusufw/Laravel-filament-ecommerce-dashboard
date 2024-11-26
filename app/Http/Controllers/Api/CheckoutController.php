@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 use App\Http\Resources\ShippingAddressResource;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\UserShippingAddress;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class CheckoutController extends Controller
 
         $address = UserShippingAddress::with('province', 'city')->findOrFail($data['user_shipping_addresses_id']);
 
-        $carts = Cart::with('product')->where('user_id', $request->user()->id)->get();
+        $carts = Cart::with('product.productPictures')->where('user_id', $request->user()->id)->get();
         if ($carts->isEmpty()) {
             throw new HttpResponseException(response([
                 'errors' => ['error' => ['Your cart is empty!']]
@@ -59,7 +61,7 @@ class CheckoutController extends Controller
             'message' => 'Calculate costs successfully',
             'data' => [
                 'address' => new ShippingAddressResource($address),
-                'carts' => $carts,
+                'carts' => CartResource::collection($carts),
                 'costs' => $costs
             ]
         ];
@@ -105,6 +107,16 @@ class CheckoutController extends Controller
             'order_code' => $orderCode,
             'notes' => $request['notes']
         ]);
+
+        $order->orderItmes()->createMany($shippingCosts['data']['carts']->map(function ($cart) {
+            return [
+                "product_title" => $cart->product->title,
+                "product_price" => $cart->product->sale_price ?? $cart->product->price,
+                "product_thumbnail" => $cart->product->productPictures[0]->thumbnail_url,
+                "qty" => $cart->quantity,
+                "sub_total" => ($cart->product->sale_price ?? $cart->product->price) * $cart->quantity
+            ];
+        }));
 
         Cart::destroy($shippingCosts['data']['carts']->map(fn($cart) => $cart->id));
 
