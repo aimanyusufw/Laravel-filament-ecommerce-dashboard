@@ -64,13 +64,29 @@ class ProductResource extends Resource
                         ->schema([
                             Forms\Components\TextInput::make('price')
                                 ->prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->stripCharacters('.')
+                                ->mask(
+                                    RawJs::make('{
+                                    numeral: true,
+                                    numeralThousandsGroupStyle: "thousand",
+                                    delimiter: ".",
+                                    numeralDecimalMark: ",",
+                                    numeralDecimalScale: 0
+                                }')
+                                )
+                                ->dehydrateStateUsing(fn($state) => str_replace(['.', ','], '', $state))
                                 ->numeric(),
                             Forms\Components\TextInput::make('sale_price')
                                 ->prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->stripCharacters('.')
+                                ->mask(
+                                    RawJs::make('{
+                                    numeral: true,
+                                    numeralThousandsGroupStyle: "thousand",
+                                    delimiter: ".",
+                                    numeralDecimalMark: ",",
+                                    numeralDecimalScale: 0
+                                }')
+                                )
+                                ->dehydrateStateUsing(fn($state) => str_replace(['.', ','], '', $state))
                                 ->numeric(),
                         ])
                         ->columns(2),
@@ -120,10 +136,10 @@ class ProductResource extends Resource
                     ->getStateUsing(fn($record) => optional($record->productPictures->first())->path)
                     ->size(50),
                 Tables\Columns\TextColumn::make('title')
-                    ->limit(0)
+                    ->limit(25)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('excerpt')
-                    ->limit(50)
+                    ->limit(25)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money('IDR')
