@@ -65,6 +65,8 @@ class OrderResource extends Resource
                                     ]),
                                 Forms\Components\TextInput::make('order_date')
                                     ->readOnly(),
+                                Forms\Components\TextInput::make('order_code')
+                                    ->readOnly(),
                                 Forms\Components\TextInput::make('resi_code')
                                     ->readOnly(),
                                 Forms\Components\Textarea::make('notes')
