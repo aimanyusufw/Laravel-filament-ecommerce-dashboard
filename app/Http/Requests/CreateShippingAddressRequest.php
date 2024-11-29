@@ -29,8 +29,8 @@ class CreateShippingAddressRequest extends FormRequest
             'shipping_phone' => 'string|numeric|min_digits:10|max_digits:15',
             'shipping_email' => 'string|email',
             'shipping_address' => 'string|required|max:150',
-            'shipping_province_id' => 'integer|required|max_digits:2',
-            'shipping_city_id' => 'integer|required|max_digits:3',
+            'shipping_province_id' => 'integer|required|max_digits:2|exists:province,id',
+            'shipping_city_id' => 'integer|required|max_digits:3|exists:cities,id',
         ];
     }
 
