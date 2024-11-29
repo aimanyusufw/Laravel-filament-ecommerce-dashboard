@@ -12,6 +12,19 @@ use App\Models\UserShippingAddress;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Midtrans\Config;
+use Midtrans\Snap;
+
+// Set your Merchant Server Key
+Config::$serverKey = env('MIDTRANSE_SERVER_KEY');
+// Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+Config::$isProduction = false;
+// Set sanitization on (default)
+Config::$isSanitized = true;
+// Set 3DS transaction for credit card to true
+Config::$is3ds = true;
+
+Config::$overrideNotifUrl = env('MIDTRANSE_NOTIF_URL');
 
 class CheckoutController extends Controller
 {
@@ -123,6 +136,75 @@ class CheckoutController extends Controller
         return response()->json([
             'message' => 'Your order is created, is time to paid your bill',
             'data' => $order,
+            'payment' => [
+                "url" => $this->midtransPaymentUrl($order)
+            ]
         ], 200);
+    }
+
+    public function midtransPaymentUrl(Order $order)
+    {
+
+        $transaction_details = [
+            "order_id" => $order->order_code,
+            "gross_amount" => $order->grand_total
+        ];
+
+        $items = [
+            [
+                "id" => "TAX",
+                "price" => $order->tax,
+                "quantity" => 1,
+                "name" => "Pajak PPN"
+            ],
+            [
+                "id" => "Shipping cost",
+                "price" => $order->shipping_cost,
+                "quantity" => 1,
+                "name" => "Biaya Pengiriman"
+            ]
+        ];
+        foreach ($order->orderItmes as $item) {
+            $items[] = [
+                "id" => "PROD" . $item->id . $item->created_at,
+                'price'    => $item->product_sale_price ?? $item->product_price,
+                'quantity' => $item->qty,
+                'name'     => $item->product_title
+            ];
+        }
+
+        $billing_address = array(
+            'first_name'   => $order->user->userDetail->billing_name,
+            'last_name'    => null,
+            'address'      => $order->user->userDetail->billing_address,
+            'city'         => $order->user->userDetail->city->city_name,
+            'postal_code'  => null,
+            'phone'        => $order->user->userDetail->phone,
+            'country_code' => 'IDN'
+        );
+
+        $orderShippingAddres = $order->shipping_address_detail;
+        $shipping_address = array(
+            'first_name'   =>  $orderShippingAddres["shipping_name"],
+            'last_name'    => null,
+            'address'      => $orderShippingAddres["title"],
+            'city'         =>  $orderShippingAddres["shipping_city"]["type"] . " " . $orderShippingAddres["shipping_city"]["name"],
+            'postal_code'  => null,
+            'phone'        =>  $orderShippingAddres["shipping_phone"],
+            'country_code' => 'IDN'
+        );
+
+        $params = [
+            "transaction_details" =>  $transaction_details,
+            "item_details"        => $items,
+            "customer_details"    => [
+                "billing_address"  => $billing_address,
+                "shipping_address" => $shipping_address,
+            ]
+        ];
+
+        $paymentUrl = \Midtrans\Snap::getSnapUrl($params);
+
+        return $paymentUrl;
     }
 }
