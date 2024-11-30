@@ -26,10 +26,10 @@ class CreateShippingAddressRequest extends FormRequest
         return [
             'title' => 'required|max:50',
             'shipping_name' => 'string|required',
-            'shipping_phone' => 'string|numeric|min_digits:10|max_digits:15',
-            'shipping_email' => 'string|email',
+            'shipping_phone' => 'required|string|numeric|min_digits:10|max_digits:15',
+            'shipping_email' => 'required|string|email',
             'shipping_address' => 'string|required|max:150',
-            'shipping_province_id' => 'integer|required|max_digits:2|exists:province,id',
+            'shipping_province_id' => 'integer|required|max_digits:2|exists:provinces,id',
             'shipping_city_id' => 'integer|required|max_digits:3|exists:cities,id',
         ];
     }
