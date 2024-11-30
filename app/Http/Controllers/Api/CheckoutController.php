@@ -131,13 +131,22 @@ class CheckoutController extends Controller
             ];
         }));
 
+        $paymentUrl = $this->midtransPaymentUrl($order);
+        $order->invoice()->create([
+            'order_id' => $order->id,
+            "expired_at" => time() + 3600 * 3,
+            "status" => 1,
+            "payment_url" => $paymentUrl,
+            "amount" => $order->grand_total
+        ]);
+
         Cart::destroy($shippingCosts['data']['carts']->map(fn($cart) => $cart->id));
 
         return response()->json([
             'message' => 'Your order is created, is time to paid your bill',
             'data' => $order,
             'payment' => [
-                "url" => $this->midtransPaymentUrl($order)
+                "url" => $paymentUrl
             ]
         ], 200);
     }

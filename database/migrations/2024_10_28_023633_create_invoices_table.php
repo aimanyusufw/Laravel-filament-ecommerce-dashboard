@@ -17,6 +17,9 @@ return new class extends Migration
             $table->unsignedInteger('paid_at')->nullable();
             $table->unsignedInteger('expired_at')->nullable();
             $table->string('status')->nullable()->default(1); // 1 Unpaid 2. Paid 3. Expired 4. Cancle
+            $table->json('raw_response')->nullable();
+            $table->string('payment_url')->nullable();
+            $table->double('amount')->nullable();
             $table->timestamps();
         });
     }

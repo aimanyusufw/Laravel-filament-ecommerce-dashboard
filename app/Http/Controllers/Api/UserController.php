@@ -26,7 +26,7 @@ class UserController extends Controller
             'profile_picture' => 'image|max:5120',
             'billing_name' => 'string|max:50',
             'billing_email' => 'email|max:225',
-            'billing_phone' => 'string|numeric|min_digits:10|max_digits:15',
+            'billing_phone' => 'numeric|min_digits:10|max_digits:15',
             'billing_address' => 'string|min:10',
             'billing_province_id' => 'exists:provinces,id',
             'billing_city_id' => 'exists:cities,id'
