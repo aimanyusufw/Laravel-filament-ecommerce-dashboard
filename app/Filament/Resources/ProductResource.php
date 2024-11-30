@@ -36,16 +36,16 @@ class ProductResource extends Resource
                     Forms\Components\Section::make('Product Information')
                         ->schema([
                             Forms\Components\TextInput::make('title')
-                                ->maxLength(255)
                                 ->required()
-                                ->placeholder('Unlimited product')
-                                ->live(debounce: 300)
+                                ->live(debounce: 500)
+                                ->placeholder('Unilited product')
                                 ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
                                     if (($get('slug') ?? '') !== Str::slug($old)) {
                                         return;
                                     }
                                     $set('slug', Str::slug($state));
-                                }),
+                                })
+                                ->maxLength(255),
                             Forms\Components\TextInput::make('slug')
                                 ->readOnly()
                                 ->required()
