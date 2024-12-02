@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\MidtransController;
 use App\Http\Controllers\Api\ShippingAddressController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\City;
@@ -66,3 +67,5 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(["data" => City::where('province_id', $province_id)->get()], 200);
     });
 });
+
+Route::post('webhook/midtrans', [MidtransController::class, 'midtrans']);
