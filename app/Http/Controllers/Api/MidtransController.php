@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 
@@ -29,44 +30,55 @@ class MidtransController extends Controller
             ], 400));
         }
 
-        $order = Order::where('order_code', $orderId)->first();
-        $invoice = Invoice::where('order_id', $order->id)->first();
-
-        if (!$order || !$invoice || $order->status != 1) {
-            throw new HttpResponseException(response([
-                "message" => 'Invalid payment',
-            ], 400));
+        $order = Order::with('orderItems')->where('order_code', $orderId)->first();
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
         }
+
+        $invoice = Invoice::where('order_id', $order->id)->first();
+        if (!$invoice || $order->status != 1) {
+            return response()->json(['message' => 'Invalid payment'], 400);
+        }
+
+        $products = Product::whereIn('id', $order->orderItems->pluck('product_id'))->get();
 
         $invoiceStatus = $invoice->status;
-        if ($transaction == 'capture') {
-            if ($type == 'credit_card') {
-                if ($fraud == 'challenge') {
-                    $invoiceStatus = '1';
-                } else {
-                    $invoiceStatus = '2';
+        switch ($transaction) {
+            case 'capture':
+                if ($type === 'credit_card') {
+                    $invoiceStatus = ($fraud === 'challenge') ? '1' : '2';
                 }
-            }
-        } else if ($transaction == 'settlement') {
-            $invoiceStatus = '2';
-        } else if ($transaction == 'pending') {
-            $invoiceStatus = '1';
-        } else if ($transaction == 'deny') {
-            $invoiceStatus = '4';
-        } else if ($transaction == 'expire') {
-            $invoiceStatus = '3';
-        } else if ($transaction == 'cancel') {
-            $invoiceStatus = '4';
+                break;
+            case 'settlement':
+                $invoiceStatus = '2';
+                break;
+            case 'pending':
+                $invoiceStatus = '1';
+                break;
+            case 'deny':
+            case 'cancel':
+                $invoiceStatus = '4';
+                break;
+            case 'expire':
+                $invoiceStatus = '3';
+                break;
         }
 
-        if ($invoiceStatus == '2') {
+        if ($invoiceStatus === '2') {
+            foreach ($products as $product) {
+                $orderedQty = $order->orderItems->firstWhere('product_id', $product->id)->qty ?? 0;
+                $product->stock -= $orderedQty;
+                $product->save();
+            }
             $order->status = '2';
             $order->save();
         }
+
         $invoice->status = $invoiceStatus;
+        $invoice->paid_at = time();
         $invoice->raw_response = json_encode($request->all());
         $invoice->save();
 
-        return response()->json(["message" => "Your payment is successfully"]);
+        return response()->json(['message' => 'Your payment is successfully']);
     }
 }
