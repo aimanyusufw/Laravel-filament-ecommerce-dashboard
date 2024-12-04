@@ -121,8 +121,9 @@ class CheckoutController extends Controller
             'notes' => $request['notes']
         ]);
 
-        $order->orderItmes()->createMany($shippingCosts['data']['carts']->map(function ($cart) {
+        $order->orderItems()->createMany($shippingCosts['data']['carts']->map(function ($cart) {
             return [
+                "product_id" => $cart->product->id,
                 "product_title" => $cart->product->title,
                 "product_price" => $cart->product->sale_price ?? $cart->product->price,
                 "product_thumbnail" => $cart->product->productPictures[0]->thumbnail_url,
@@ -173,7 +174,7 @@ class CheckoutController extends Controller
                 "name" => "Biaya Pengiriman"
             ]
         ];
-        foreach ($order->orderItmes as $item) {
+        foreach ($order->orderItems as $item) {
             $items[] = [
                 "id" => "PROD" . $item->id . $item->created_at,
                 'price'    => $item->product_sale_price ?? $item->product_price,
@@ -183,12 +184,12 @@ class CheckoutController extends Controller
         }
 
         $billing_address = array(
-            'first_name'   => $order->user->userDetail->billing_name,
+            'first_name'   => $order->user->userDetail->billing_name ?? null,
             'last_name'    => null,
-            'address'      => $order->user->userDetail->billing_address,
-            'city'         => $order->user->userDetail->city->city_name,
+            'address'      => $order->user->userDetail->billing_address ?? null,
+            'city'         => $order->user->userDetail->city->city_name ?? null,
             'postal_code'  => null,
-            'phone'        => $order->user->userDetail->phone,
+            'phone'        => $order->user->userDetail->phone ?? null,
             'country_code' => 'IDN'
         );
 
