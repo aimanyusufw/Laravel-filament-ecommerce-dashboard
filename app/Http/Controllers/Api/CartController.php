@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateCartRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 
@@ -32,6 +33,16 @@ class CartController extends Controller
         $cart = Cart::where('user_id', $request->user()->id)
             ->where('product_id', $data['product_id'])
             ->first();
+
+        $product = Product::where("id", $data['product_id'])->first();
+
+        $productAvailable = $product->stock >= $data['quantity'];
+
+        if (!$productAvailable) {
+            throw new HttpResponseException(response([
+                'errors' => ['error' => ['Product stock is not available!']]
+            ], 400));
+        }
 
         if ($cart) {
             $cart->quantity += $data['quantity'];
