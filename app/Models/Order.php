@@ -21,13 +21,13 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function orderItmes()
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
 
     public function invoice()
     {
-        return $this->hasOne(Invoice::class);
+        return $this->hasOne(Invoice::class, 'order_id', 'id');
     }
 }
