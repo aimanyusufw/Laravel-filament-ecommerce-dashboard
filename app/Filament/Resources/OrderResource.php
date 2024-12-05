@@ -6,6 +6,7 @@ use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -68,7 +69,8 @@ class OrderResource extends Resource
                                 Forms\Components\TextInput::make('order_code')
                                     ->readOnly(),
                                 Forms\Components\TextInput::make('resi_code')
-                                    ->readOnly(),
+                                    ->string()
+                                    ->maxLength(255),
                                 Forms\Components\Textarea::make('notes')
                                     ->rows(5)
                                     ->readOnly(),
@@ -111,10 +113,35 @@ class OrderResource extends Resource
                                     ->numeric()
                                     ->readOnly(),
                             ]),
+                        Forms\Components\Tabs\Tab::make('Invoice')
+                            ->schema([
+                                Forms\Components\Section::make("invoice")
+                                    ->relationship('invoice')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('payment_url')
+                                            ->readOnly(),
+                                        Forms\Components\TextInput::make('amount')
+                                            ->prefix('Rp')
+                                            ->mask(RawJs::make('$money($input)'))
+                                            ->stripCharacters(',')
+                                            ->numeric()
+                                            ->readOnly(),
+                                        Forms\Components\TextInput::make('paid_at')
+                                            ->readOnly(),
+                                        Forms\Components\Select::make('status')
+                                            ->disabled()
+                                            ->options([
+                                                '1' => 'Unpaid',
+                                                '2' => 'Paid',
+                                                '3' => 'Expired',
+                                                '4' => 'Cancle',
+                                            ]),
+                                    ])->columns(2),
+                            ]),
                         Forms\Components\Tabs\Tab::make('Product items')
                             ->schema([
-                                Forms\Components\Repeater::make('orderItmes')
-                                    ->relationship('orderItmes')
+                                Forms\Components\Repeater::make('orderItems')
+                                    ->relationship('orderItems')
                                     ->schema([
                                         Forms\Components\TextInput::make('product_title')
                                             ->readOnly(),
@@ -192,6 +219,7 @@ class OrderResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('notes')
+                    ->limit(50)
                     ->searchable()
                     ->default("-"),
                 Tables\Columns\TextColumn::make('created_at')
