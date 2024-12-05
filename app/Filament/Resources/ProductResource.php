@@ -37,7 +37,7 @@ class ProductResource extends Resource
                         ->schema([
                             Forms\Components\TextInput::make('title')
                                 ->required()
-                                ->live(debounce: 500)
+                                ->live(debounce: 300)
                                 ->placeholder('Unilited product')
                                 ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
                                     if (($get('slug') ?? '') !== Str::slug($old)) {
@@ -47,7 +47,6 @@ class ProductResource extends Resource
                                 })
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('slug')
-                                ->readOnly()
                                 ->required()
                                 ->maxLength(255),
                             Forms\Components\Textarea::make('excerpt')
