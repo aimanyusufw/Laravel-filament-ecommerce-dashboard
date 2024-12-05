@@ -52,7 +52,6 @@ class CategoryResource extends Resource
                         ->maxLength(255),
                     CuratorPicker::make('featured_image')
                         ->columnSpanFull()
-                        ->relationship('featuredImage', 'id')
                         ->orderColumn('order')
                 ])->columns(['sm' => 2])->columnSpan(2),
                 Forms\Components\Section::make("Time stamps")->schema([
